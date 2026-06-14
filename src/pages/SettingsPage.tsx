@@ -4,127 +4,106 @@ import DogRetriever from '../components/DogRetriever'
 import { storage } from '../utils/storage'
 
 export default function SettingsPage() {
-  const [tip, setTip] = useState<string>('')
+  const [resetDone, setResetDone] = useState(false)
+  const [confirm, setConfirm] = useState(false)
 
-  function doClearMoods() {
-    if (!confirm('确定要清空所有心情记录吗？')) return
-    storage.clearMoods()
-    setTip('心情记录已清空。')
-    setTimeout(() => setTip(''), 1500)
-  }
-  function doClearFavQuotes() {
-    if (!confirm('确定要清空所有语录收藏吗？')) return
-    storage.clearFavQuotes()
-    setTip('语录收藏已清空。')
-    setTimeout(() => setTip(''), 1500)
-  }
-  function doClearCollected() {
-    if (!confirm('确定要清空卡片图鉴吗？')) return
-    storage.clearCollected()
-    setTip('卡片图鉴已清空。')
-    setTimeout(() => setTip(''), 1500)
-  }
-  function doClearDraws() {
-    if (!confirm('确定要重置抽卡记录吗？重置后今天可以再抽一张。')) return
-    storage.clearDraws()
-    setTip('抽卡记录已清空，今天可以再抽一张啦～')
-    setTimeout(() => setTip(''), 1800)
-  }
-  function doClearAll() {
-    if (!confirm('这会清空所有本地数据，确定继续？')) return
+  function handleReset() {
+    if (!confirm) {
+      setConfirm(true)
+      setTimeout(() => setConfirm(false), 4000)
+      return
+    }
     storage.clearAll()
-    setTip('已清空所有本地数据。')
-    setTimeout(() => setTip(''), 1800)
+    setResetDone(true)
+    setConfirm(false)
+    setTimeout(() => setResetDone(false), 2000)
   }
+
+  const moodsCount = storage.getMoods().length
+  const cardsCount = storage.getCollected().length
+  const quotesCount = storage.getFavQuotes().length
 
   return (
-    <div className="mx-auto max-w-xl px-4 pt-6 pb-28">
+    <div className="mx-auto max-w-xl px-4 pt-8 pb-32">
       <header className="text-center">
-        <h1 className="text-3xl font-cute font-bold text-lineBrown">设置</h1>
-        <p className="mt-1 text-sm text-softBrown">
-          你的数据只保存在本机浏览器中，清除后无法恢复。
-        </p>
+        <h1 className="text-2xl font-cute font-bold text-deepBrown">关于小狗</h1>
+        <p className="mt-1 text-sm text-grayBrown">慢慢写，慢慢陪你走</p>
       </header>
 
-      {/* 小狗装饰 */}
-      <section className="card-base mt-5 p-4">
-        <div className="flex items-center justify-around">
-          <DogMaltese mood="sleep" size={100} />
-          <DogRetriever mood="daze" size={100} />
+      {/* 双小狗 */}
+      <section className="mt-6 flex items-center justify-center gap-3">
+        <DogMaltese mood="sleep" size={100} />
+        <DogRetriever mood="happy" size={100} wag />
+      </section>
+
+      {/* 数据统计 */}
+      <section className="mt-8">
+        <h2 className="section-title">你的小狗</h2>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          <div className="line-card p-4 text-center">
+            <div className="text-2xl font-cute font-bold text-deepBrown">
+              {moodsCount}
+            </div>
+            <div className="text-xs text-grayBrown mt-1">心情日记</div>
+          </div>
+          <div className="line-card p-4 text-center">
+            <div className="text-2xl font-cute font-bold text-deepBrown">
+              {cardsCount}
+            </div>
+            <div className="text-xs text-grayBrown mt-1">收集卡片</div>
+          </div>
+          <div className="line-card p-4 text-center">
+            <div className="text-2xl font-cute font-bold text-deepBrown">
+              {quotesCount}
+            </div>
+            <div className="text-xs text-grayBrown mt-1">收藏语录</div>
+          </div>
         </div>
       </section>
 
-      {tip && (
-        <div className="card-base mt-4 p-4 text-center text-sm text-lineBrown font-bold font-cute">
-          {tip}
+      {/* 说明 */}
+      <section className="mt-10">
+        <h2 className="section-title">设计灵感</h2>
+        <div className="mt-3 line-card p-5">
+          <p className="text-sm leading-relaxed text-deepBrown/80 font-cute">
+            灵感来自韩国线条小狗情侣头像——圆圆脑袋、豆豆眼睛、
+            软软的小耳朵。一只小白一只小金，并排坐着看你。
+            所有数据仅保存在你自己的设备上，没有登录，没有追踪。
+          </p>
         </div>
-      )}
-
-      <section className="mt-6 space-y-3">
-        <button onClick={doClearMoods} className="card-base w-full p-4 text-left hover:-translate-y-0.5 transition">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFD9E0] flex items-center justify-center text-lg">
-              📝
-            </div>
-            <div className="flex-1">
-              <div className="font-extrabold text-lineBrown">清空心情记录</div>
-              <div className="mt-0.5 text-xs text-softBrown">移除过去所有心情日记</div>
-            </div>
-          </div>
-        </button>
-
-        <button onClick={doClearFavQuotes} className="card-base w-full p-4 text-left hover:-translate-y-0.5 transition">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFE4A8] flex items-center justify-center text-lg">
-              💬
-            </div>
-            <div className="flex-1">
-              <div className="font-extrabold text-lineBrown">清空语录收藏</div>
-              <div className="mt-0.5 text-xs text-softBrown">取消所有已点赞的语录</div>
-            </div>
-          </div>
-        </button>
-
-        <button onClick={doClearCollected} className="card-base w-full p-4 text-left hover:-translate-y-0.5 transition">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#E8D9F0] flex items-center justify-center text-lg">
-              🎴
-            </div>
-            <div className="flex-1">
-              <div className="font-extrabold text-lineBrown">清空卡片图鉴</div>
-              <div className="mt-0.5 text-xs text-softBrown">让所有卡片重新变成未知</div>
-            </div>
-          </div>
-        </button>
-
-        <button onClick={doClearDraws} className="card-base w-full p-4 text-left hover:-translate-y-0.5 transition">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#C8E6D0] flex items-center justify-center text-lg">
-              🎲
-            </div>
-            <div className="flex-1">
-              <div className="font-extrabold text-lineBrown">重置每日抽卡</div>
-              <div className="mt-0.5 text-xs text-softBrown">今天可以再抽一张新卡片</div>
-            </div>
-          </div>
-        </button>
-
-        <button onClick={doClearAll} className="card-base w-full p-4 text-left hover:-translate-y-0.5 transition">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFD5CC] flex items-center justify-center text-lg">
-              🧹
-            </div>
-            <div className="flex-1">
-              <div className="font-extrabold text-[#c4823f]">清空全部数据</div>
-              <div className="mt-0.5 text-xs text-softBrown">心情、语录、卡片一次清空</div>
-            </div>
-          </div>
-        </button>
       </section>
 
-      <section className="mt-8 text-center text-xs text-softBrown leading-relaxed font-cute">
-        <p>马尔济斯 & 小金毛 治愈手账 v0.1.0</p>
-        <p className="mt-1">每天对自己温柔一点点 🐾</p>
+      {/* 操作区 */}
+      <section className="mt-10">
+        <h2 className="section-title">管理数据</h2>
+        <div className="mt-3 line-card p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-deepBrown">清空本地数据</div>
+              <div className="mt-1 text-sm text-grayBrown">
+                删除所有心情、卡片与语录收藏
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleReset}
+              className={`px-4 py-2 rounded-full font-bold border transition ${
+                confirm
+                  ? 'bg-red-500 text-white border-red-500'
+                  : 'bg-white text-deepBrown border-deepBrown/10'
+              }`}
+            >
+              {resetDone ? '已清空' : confirm ? '确认？再点一次' : '清空'}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 底部 */}
+      <section className="mt-12 text-center">
+        <p className="font-cute text-grayBrown text-sm">
+          · 今天也是被小狗治愈的一天 ·
+        </p>
       </section>
     </div>
   )

@@ -11,7 +11,9 @@ interface Props {
 }
 
 /**
- * Maltese 马尔济斯 —— 白色蓬松毛发、圆眼睛、软萌治愈
+ * Line Dog —— 线条小狗（左）
+ * 纯黑色线条风格：圆圆脑袋、耷拉耳朵、豆豆眼、圆鼻子
+ * 参考：韩国线条小狗情侣头像风格
  */
 export default function DogMaltese({
   mood = 'happy',
@@ -20,12 +22,7 @@ export default function DogMaltese({
   className = '',
   style,
 }: Props) {
-  const stroke = '#4A3B2A'
-  const strokeThin = '#8A7357'
-  const fur = '#FFFFFF'
-  const furShade = '#F0EDE5'
-  const earInside = '#FFE4E8'
-  const blush = '#FFC5CC'
+  const stroke = '#2C2420'
 
   return (
     <svg
@@ -37,213 +34,234 @@ export default function DogMaltese({
       style={style}
       aria-hidden="true"
     >
-      {/* 背景圆 —— 奶油米白 */}
-      <circle cx="120" cy="120" r="110" fill="#FFFAF0" />
+      {/* 身体 —— 圆圆的小身体 */}
+      <path
+        d="M85 190 q20 -15 35 -5 q5 5 0 10 q-10 8 -35 5 z"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
 
-      {/* 蓬松毛发外圈 */}
-      <g>
-        <circle cx="70" cy="70" r="28" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
-        <circle cx="170" cy="70" r="28" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
-        <circle cx="55" cy="120" r="24" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
-        <circle cx="185" cy="120" r="24" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
-        <circle cx="75" cy="175" r="26" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
-        <circle cx="165" cy="175" r="26" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
-        <circle cx="120" cy="185" r="22" fill={fur} stroke={strokeThin} strokeWidth="1.5" />
+      {/* 前腿 */}
+      <path
+        d="M90 200 l-3 15 l10 0"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+
+      {/* 尾巴 —— 带摇摆动画 */}
+      <g
+        className={wag ? 'animate-wag' : ''}
+        style={{ transformOrigin: '145px 185px' }}
+      >
+        <path
+          d="M135 185 q15 -5 20 -20 q-3 12 -15 20 z"
+          fill="none"
+          stroke={stroke}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </g>
 
-      {/* 身体 —— 圆毛团 */}
-      <ellipse cx="120" cy="155" rx="55" ry="50" fill={fur} stroke={stroke} strokeWidth="2" />
-      <ellipse cx="120" cy="160" rx="40" ry="32" fill={furShade} />
-
-      {/* 头 */}
-      <g>
-        <circle cx="120" cy="110" r="50" fill={fur} stroke={stroke} strokeWidth="2.2" />
-        {/* 毛发蓬松线 */}
-        <path d="M80 100 q8 -10 20 -8" fill="none" stroke={strokeThin} strokeWidth="1.3" />
-        <path d="M140 92 q8 -6 20 -2" fill="none" stroke={strokeThin} strokeWidth="1.3" />
-        <path d="M70 120 q-6 10 -2 22" fill="none" stroke={strokeThin} strokeWidth="1.3" />
-        <path d="M170 120 q6 10 2 22" fill="none" stroke={strokeThin} strokeWidth="1.3" />
-      </g>
-
-      {/* 耳朵 —— 下垂的长耳 */}
+      {/* 左耳朵 —— 耷拉下来的长耳（马尔济斯） */}
       <path
-        d="M78 90 q-22 10 -18 55 q0 22 18 25 q14 -2 14 -25 q0 -30 -14 -55 z"
-        fill={fur}
-        stroke={stroke}
-        strokeWidth="2"
-      />
-      <path
-        d="M78 95 q-16 8 -14 40 q2 18 14 20"
+        d="M70 95 q-18 25 -8 55 q6 15 20 8 q8 -6 4 -15 q-5 -18 -8 -40 z"
         fill="none"
-        stroke={strokeThin}
-        strokeWidth="1.2"
-      />
-      <path
-        d="M162 90 q22 10 18 55 q0 22 -18 25 q-14 -2 -14 -25 q0 -30 14 -55 z"
-        fill={fur}
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* 左耳内的线条 */}
+      <path
+        d="M75 110 q-8 18 0 40"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+
+      {/* 右耳朵 —— 耷拉的长耳 */}
+      <path
+        d="M170 95 q18 25 8 55 q-6 13 -20 5 q-10 -8 -5 -20 q3 -15 12 -40 z"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* 右耳内的线条 */}
+      <path
+        d="M165 110 q8 18 0 40"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+
+      {/* 头 —— 圆圆脑袋 */}
+      <ellipse
+        cx="120"
+        cy="110"
+        rx="52"
+        ry="48"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+
+      {/* 头顶一小撮毛 */}
+      <path
+        d="M108 68 q5 -8 12 -2"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2.5"
+        strokeLinecap="round"
       />
       <path
-        d="M162 95 q16 8 14 40 q-2 18 -14 20"
+        d="M125 66 q5 -8 12 -4"
         fill="none"
-        stroke={strokeThin}
-        strokeWidth="1.2"
+        stroke={stroke}
+        strokeWidth="2.5"
+        strokeLinecap="round"
       />
-      {/* 耳朵内侧粉色 */}
-      <ellipse cx="72" cy="130" rx="10" ry="18" fill={earInside} opacity="0.8" />
-      <ellipse cx="168" cy="130" rx="10" ry="18" fill={earInside} opacity="0.8" />
 
-      {/* 腮红 */}
-      <circle cx="88" cy="128" r="8" fill={blush} opacity="0.7" />
-      <circle cx="152" cy="128" r="8" fill={blush} opacity="0.7" />
+      {/* 腮红 —— 淡粉色 */}
+      <ellipse cx="88" cy="125" rx="8" ry="5" fill="#FFB8C5" opacity="0.5" />
+      <ellipse cx="152" cy="125" rx="8" ry="5" fill="#FFB8C5" opacity="0.5" />
 
       {/* 眼睛 */}
       {mood === 'sleep' ? (
         <>
-          <path d="M92 108 q8 -6 16 0" fill="none" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M132 108 q8 -6 16 0" fill="none" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" />
+          <path
+            d="M88 108 q8 -5 16 0"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M136 108 q8 -5 16 0"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
         </>
       ) : mood === 'daze' ? (
         <>
-          <circle cx="100" cy="110" r="5" fill={stroke} />
-          <circle cx="140" cy="110" r="5" fill={stroke} />
-          <path d="M92 120 l16 -8 M132 112 l16 8" fill="none" stroke={strokeThin} strokeWidth="1.2" strokeLinecap="round" />
+          <circle cx="96" cy="110" r="3.5" fill={stroke} />
+          <circle cx="144" cy="110" r="3.5" fill={stroke} />
+          <path d="M92 122 l8 -4" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M140 118 l8 4" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <g className="animate-blink" style={{ transformOrigin: '100px 110px' }}>
-            <ellipse cx="100" cy="110" rx="6" ry="7" fill={stroke} />
-            <circle cx="102" cy="108" r="2" fill="white" />
-          </g>
-          <g className="animate-blink" style={{ transformOrigin: '140px 110px' }}>
-            <ellipse cx="140" cy="110" rx="6" ry="7" fill={stroke} />
-            <circle cx="142" cy="108" r="2" fill="white" />
-          </g>
+          {/* 豆豆眼 */}
+          <ellipse cx="96" cy="110" rx="4.5" ry="5" fill={stroke} />
+          <circle cx="98" cy="108" r="1.5" fill="white" />
+          <ellipse cx="144" cy="110" rx="4.5" ry="5" fill={stroke} />
+          <circle cx="146" cy="108" r="1.5" fill="white" />
         </>
       )}
 
-      {/* 鼻子 */}
-      <ellipse cx="120" cy="125" rx="5" ry="4" fill={stroke} />
-      <circle cx="118" cy="123" r="1.2" fill="white" opacity="0.7" />
+      {/* 鼻子 —— 小圆鼻子 */}
+      <ellipse cx="120" cy="128" rx="5" ry="4" fill={stroke} />
 
       {/* 嘴巴 */}
       {mood === 'happy' || mood === 'cheer' ? (
-        <path
-          d="M108 132 q12 10 24 0"
-          fill="none"
-          stroke={stroke}
-          strokeWidth="2.2"
-          strokeLinecap="round"
-        />
+        <>
+          <path
+            d="M120 132 l0 6"
+            stroke={stroke}
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M108 140 q12 10 24 0"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+          {/* 吐舌头 */}
+          {mood === 'cheer' && (
+            <ellipse cx="120" cy="146" rx="4" ry="5" fill="#FFB8C5" stroke={stroke} strokeWidth="1.5" />
+          )}
+        </>
       ) : mood === 'hug' ? (
-        <path
-          d="M112 132 q8 8 16 0"
-          fill="none"
-          stroke={stroke}
-          strokeWidth="2.2"
-          strokeLinecap="round"
-        />
+        <>
+          <path
+            d="M120 132 l0 4"
+            stroke={stroke}
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M112 140 q8 6 16 0"
+            fill="none"
+            stroke={stroke}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+        </>
       ) : mood === 'sleep' ? (
         <path
-          d="M114 134 q6 2 12 0"
+          d="M114 142 q6 3 12 0"
           fill="none"
           stroke={stroke}
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
         />
       ) : (
         <path
-          d="M110 133 q10 -2 20 0"
+          d="M112 142 q8 -3 16 0"
           fill="none"
           stroke={stroke}
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
         />
       )}
 
-      {/* 前爪（举起来的情况） */}
+      {/* 举起的爪子（cheer 状态） */}
       {mood === 'cheer' && (
         <>
-          <path
-            d="M70 175 q-18 -20 -16 -50"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
-          <circle cx="50" cy="115" r="10" fill={fur} stroke={stroke} strokeWidth="2" />
-          <path
-            d="M170 175 q18 -20 16 -50"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
-          <circle cx="190" cy="115" r="10" fill={fur} stroke={stroke} strokeWidth="2" />
-          {/* 小星星 */}
-          <path d="M40 80 l3 8 l8 2 l-8 4 l-2 9 l-3 -9 l-8 -4 l8 -2 z" fill="#FFD98A" stroke={stroke} strokeWidth="1.2" />
-          <path d="M200 75 l2.5 7 l7 1.5 l-7 3.5 l-1.5 8 l-1.5 -8 l-7 -3.5 l7 -1.5 z" fill="#FFD98A" stroke={stroke} strokeWidth="1.2" />
+          <ellipse cx="55" cy="140" rx="8" ry="10" fill="none" stroke={stroke} strokeWidth="2.5" />
+          <path d="M51 143 l-2 3 M55 144 l0 4 M59 143 l2 3" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" />
         </>
       )}
 
+      {/* 拥抱状态：小小爱心 */}
       {mood === 'hug' && (
-        <>
-          <path
-            d="M78 180 q-4 -18 20 -22 q24 -4 24 18"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
-          <path
-            d="M162 180 q4 -18 -20 -22 q-24 -4 -24 18"
-            fill="none"
-            stroke={stroke}
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
-          {/* 心形 */}
-          <path
-            d="M120 170 c -8 -10 -22 -6 -22 6 c 0 12 22 22 22 22 c 0 0 22 -10 22 -22 c 0 -12 -14 -16 -22 -6 z"
-            fill="#FFC5CC"
-            stroke={stroke}
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-        </>
-      )}
-
-      {/* 尾巴 */}
-      <g
-        className={wag ? 'animate-wag' : ''}
-        style={{ transformOrigin: '170px 175px' }}
-      >
         <path
-          d="M170 175 q25 -5 30 -25 q4 15 -5 28 q-10 10 -25 3 z"
-          fill={fur}
+          d="M120 58 c-3 -4 -8 -2 -8 2 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -4 -5 -6 -8 -2 z"
+          fill="#FFB8C5"
           stroke={stroke}
           strokeWidth="2"
+          strokeLinejoin="round"
         />
-        <path
-          d="M178 170 q10 -4 12 -12"
-          fill="none"
-          stroke={strokeThin}
-          strokeWidth="1.2"
-        />
-      </g>
+      )}
 
-      {/* 名字标签 */}
+      {/* 名字小标签 */}
       <text
         x="120"
-        y="220"
+        y="225"
         textAnchor="middle"
         fontFamily="'Gaegu', sans-serif"
         fontSize="14"
         fontWeight="700"
-        fill="#8A7357"
+        fill={stroke}
+        opacity="0.6"
       >
-        Maltese
+        她
       </text>
     </svg>
   )

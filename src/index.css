@@ -11,62 +11,53 @@ body,
 }
 
 body {
-  font-family: 'Noto Sans KR', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  color: #4A3B2A;
-  -webkit-font-smoothing: antialiased;
-  background:
-    radial-gradient(circle at 15% 10%, #FFF4E0 0%, transparent 50%),
-    radial-gradient(circle at 85% 20%, #FFE4A8 0%, transparent 45%),
-    radial-gradient(circle at 50% 100%, #FFD9E0 0%, transparent 55%),
-    #FFFAF0;
-  background-attachment: fixed;
+  font-family: 'Noto Sans KR', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  color: #2C2420;
+  background: #FFF8F0;
 }
 
 @layer components {
-  .card-base {
-    @apply bg-white/85 backdrop-blur-sm shadow-soft border border-white;
-    border-radius: 1.75rem;
+  /* 白色圆角卡片 */
+  .line-card {
+    @apply bg-white rounded-3xl2 border border-deepBrown/10;
   }
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-lineBrown font-bold shadow-pop transition active:scale-95 active:translate-y-0.5 hover:brightness-105 select-none;
-    background: linear-gradient(to bottom, #FFE4A8, #FFD98A);
-  }
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white text-lineBrown font-bold shadow-soft border transition active:scale-95 hover:bg-milk select-none;
-    border-color: #FFFAF0;
-  }
-  .tab-item {
-    @apply flex flex-col items-center justify-center gap-1 flex-1 text-xs text-softBrown transition select-none;
-  }
-  .tab-active {
-    @apply text-lineBrown font-bold;
-  }
+
+  /* 心情胶囊按钮 */
   .mood-chip {
-    @apply flex flex-col items-center justify-center gap-2 py-4 px-3 bg-white border shadow-soft transition active:scale-95 cursor-pointer select-none;
-    border-radius: 1.25rem;
-    border-color: #FFFAF0;
+    @apply flex flex-col items-center justify-center gap-2 py-4 px-3 rounded-3xl2 bg-white border border-deepBrown/10 transition-all active:scale-95 cursor-pointer select-none;
   }
   .mood-chip-active {
-    @apply border-softPink bg-softPink/60;
+    @apply border-softPink bg-softPink/20;
   }
-  .hero-title {
-    @apply font-cute text-3xl font-bold leading-tight;
+
+  /* 粉色主按钮 */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-deepBrown text-white font-bold transition-all active:scale-95 hover:opacity-90 select-none;
   }
-  .tag-pill {
-    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold;
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white text-deepBrown font-bold border border-deepBrown/10 transition-all active:scale-95 hover:bg-milk select-none;
   }
+
+  /* 语录卡片 */
+  .quote-card {
+    @apply bg-white rounded-3xl2 p-5 border border-deepBrown/10;
+  }
+
+  /* 小标题 */
   .section-title {
-    @apply font-cute text-xl font-bold text-lineBrown;
+    @apply font-cute text-xl font-bold text-deepBrown;
   }
 }
 
+/* 自定义滚动条 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E8D5B5;
-  border-radius: 4px;
+  background: rgba(44, 36, 32, 0.15);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;

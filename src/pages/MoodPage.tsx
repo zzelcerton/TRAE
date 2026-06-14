@@ -1,134 +1,129 @@
 import { useState } from 'react'
 import DogMaltese from '../components/DogMaltese'
 import DogRetriever from '../components/DogRetriever'
-import {
-  storage,
-  todayStr,
-  MOOD_LABELS,
-  MOOD_EMOJI,
-  MOOD_MESSAGES,
-  type MoodKey,
-} from '../utils/storage'
+import { storage, todayStr, MOOD_LABELS, MOOD_EMOJI } from '../utils/storage'
+import type { Mood } from '../utils/storage'
 
-const MOOD_ORDER: MoodKey[] = ['happy', 'normal', 'tired', 'anxious', 'sad']
+const MOODS: { id: Mood; label: string; emoji: string }[] = [
+  { id: 'happy', label: '开心', emoji: '🌸' },
+  { id: 'sad', label: '难过', emoji: '🫧' },
+  { id: 'tired', label: '有点累', emoji: '🌙' },
+  { id: 'love', label: '甜甜的', emoji: '♡' },
+  { id: 'angry', label: '气气', emoji: '🔥' },
+  { id: 'calm', label: '平静', emoji: '🌿' },
+]
 
 export default function MoodPage() {
   const today = todayStr()
   const existing = storage.getMoods().find((m) => m.date === today)
-
-  const [selected, setSelected] = useState<MoodKey>(existing?.mood ?? 'happy')
-  const [text, setText] = useState<string>(existing?.text ?? '')
-  const [savedTip, setSavedTip] = useState<string>('')
-
-  const history = storage.getMoods().slice(0, 30)
+  const [mood, setMood] = useState<Mood | null>(existing?.mood ?? null)
+  const [text, setText] = useState(existing?.text ?? '')
+  const [saved, setSaved] = useState(!!existing)
 
   function handleSave() {
-    storage.addMood({
-      date: today,
-      mood: selected,
-      text: text.trim(),
-      createdAt: Date.now(),
-    })
-    setSavedTip('小狗已替你记下啦～')
-    setTimeout(() => setSavedTip(''), 1800)
+    if (!mood) return
+    storage.saveMood({ date: today, mood, text })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
   }
 
+  const dogMood: 'happy' | 'sleep' | 'cheer' | 'hug' | 'daze' =
+    mood === 'sad' || mood === 'tired'
+      ? 'hug'
+      : mood === 'love'
+        ? 'hug'
+        : mood === 'angry'
+          ? 'daze'
+          : mood === 'calm'
+            ? 'sleep'
+            : 'cheer'
+
   return (
-    <div className="mx-auto max-w-xl px-4 pt-6 pb-28">
+    <div className="mx-auto max-w-xl px-4 pt-8 pb-32">
       <header className="text-center">
-        <p className="text-sm text-softBrown">
-          {new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' })}
-        </p>
-        <h1 className="mt-1 text-3xl font-cute font-bold text-lineBrown">
-          今天的心情
+        <p className="text-sm text-grayBrown">{today}</p>
+        <h1 className="mt-2 text-2xl font-cute font-bold text-deepBrown">
+          今天想告诉小狗什么呢？
         </h1>
       </header>
 
-      {/* 今日小狗 —— 根据心情联动 */}
-      <section className="card-base mt-5 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 flex flex-col items-center">
-            <DogMaltese
-              mood={selected === 'happy' || selected === 'normal' ? 'happy' : selected === 'tired' ? 'sleep' : selected === 'sad' ? 'daze' : 'daze'}
-              size={130}
-              wag={selected === 'happy'}
-            />
-          </div>
-          <div className="flex-1 flex flex-col items-center">
-            <DogRetriever
-              mood={selected === 'happy' ? 'cheer' : selected === 'normal' ? 'happy' : selected === 'tired' ? 'sleep' : selected === 'sad' ? 'hug' : 'daze'}
-              size={130}
-              wag={selected === 'happy' || selected === 'normal'}
-            />
-          </div>
-        </div>
-        <p className="mt-2 text-center text-sm text-lineBrown/85 font-cute">
-          {MOOD_MESSAGES[selected][0]}
-        </p>
+      {/* 双小狗 */}
+      <section className="mt-6 flex items-end justify-center gap-4">
+        <DogMaltese mood={dogMood} size={120} wag />
+        <DogRetriever mood={dogMood} size={120} wag style={{ transform: 'translateY(-4px)' }} />
       </section>
 
-      {/* 选择心情 */}
-      <section className="mt-6">
-        <h2 className="font-cute text-lg font-bold text-lineBrown px-1">此刻的你是？</h2>
-        <div className="mt-3 grid grid-cols-5 gap-2">
-          {MOOD_ORDER.map((m) => (
-            <button
-              key={m}
-              onClick={() => setSelected(m)}
-              className={`mood-chip ${selected === m ? 'mood-chip-active' : ''}`}
-            >
-              <span className="text-2xl">{MOOD_EMOJI[m]}</span>
-              <span className="text-xs font-bold text-lineBrown">{MOOD_LABELS[m]}</span>
-            </button>
-          ))}
+      {/* 心情选择 */}
+      <section className="mt-8">
+        <h2 className="section-title">现在的心情</h2>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          {MOODS.map((m) => {
+            const active = mood === m.id
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setMood(m.id)}
+                className={`mood-chip ${active ? 'mood-chip-active' : ''}`}
+              >
+                <span className="text-2xl">{m.emoji}</span>
+                <span className="text-sm font-bold text-deepBrown">{m.label}</span>
+              </button>
+            )
+          })}
         </div>
       </section>
 
-      {/* 留言 */}
-      <section className="mt-6">
-        <h2 className="font-cute text-lg font-bold text-lineBrown px-1">想对自己说点什么？</h2>
-        <div className="card-base mt-3 p-4">
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="例如：今天有点累，但喝到了一杯好喝的奶茶。"
-            className="w-full h-28 resize-none bg-transparent text-lineBrown outline-none text-sm leading-relaxed"
-            maxLength={200}
-          />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-xs text-softBrown">{savedTip || `${text.length}/200`}</span>
-            <button onClick={handleSave} className="btn-primary">
-              记一笔
-            </button>
-          </div>
-        </div>
+      {/* 写点什么 */}
+      <section className="mt-8">
+        <h2 className="section-title">想说的话</h2>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="小狗在听呢，慢慢写～"
+          className="mt-3 w-full h-32 resize-none rounded-3xl2 border border-deepBrown/10 bg-white p-4 text-base text-deepBrown placeholder:text-grayBrown/60 focus:outline-none focus:border-softPink transition-colors"
+        />
+      </section>
+
+      {/* 保存 */}
+      <section className="mt-8 flex justify-center">
+        <button type="button" className="btn-primary text-base" onClick={handleSave} disabled={!mood}>
+          {saved ? '已收藏 ♡' : '交给小狗保管'}
+        </button>
       </section>
 
       {/* 历史记录 */}
-      <section className="mt-6">
-        <h2 className="font-cute text-lg font-bold text-lineBrown px-1">最近的你</h2>
+      <section className="mt-12">
+        <h2 className="section-title">最近的日子</h2>
         <div className="mt-3 space-y-2">
-          {history.length === 0 && (
-            <div className="card-base p-5 text-center text-sm text-softBrown font-cute">
-              还没有任何记录，今天是第一次呀～
+          {storage
+            .getMoods()
+            .slice()
+            .reverse()
+            .slice(0, 7)
+            .map((m) => (
+              <div key={m.date} className="line-card p-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{MOOD_EMOJI[m.mood]}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm text-grayBrown">{m.date}</div>
+                    <div className="font-bold text-deepBrown">
+                      {MOOD_LABELS[m.mood]}
+                    </div>
+                    {m.text && (
+                      <div className="mt-1 text-sm text-deepBrown/80">
+                        {m.text}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          {storage.getMoods().length === 0 && (
+            <div className="text-center py-8 text-grayBrown text-sm">
+              还没有记录哦，开始第一天吧～
             </div>
           )}
-          {history.map((m) => (
-            <div key={m.date} className="card-base p-4 flex items-start gap-3">
-              <div className="text-2xl leading-none pt-0.5">{MOOD_EMOJI[m.mood]}</div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-lineBrown">{MOOD_LABELS[m.mood]}</span>
-                  <span className="text-xs text-softBrown">{m.date}</span>
-                </div>
-                {m.text && (
-                  <p className="mt-1 text-sm text-lineBrown/85 leading-relaxed break-words">
-                    {m.text}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
         </div>
       </section>
     </div>

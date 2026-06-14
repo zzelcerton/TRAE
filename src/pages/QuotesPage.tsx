@@ -2,127 +2,126 @@ import { useMemo, useState } from 'react'
 import DogMaltese from '../components/DogMaltese'
 import DogRetriever from '../components/DogRetriever'
 import { QUOTES_MALTESE, QUOTES_RETRIEVER } from '../data/quotes'
-import { storage } from '../utils/storage'
+import { storage, todayStr } from '../utils/storage'
 
-type Filter = 'all' | 'maltese' | 'retriever' | 'fav'
+function shuffle<T>(list: T[], seed: string): T[] {
+  const s = seed.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  let r = s
+  const rand = () => {
+    r = (r * 9301 + 49297) % 233280
+    return r / 233280
+  }
+  return [...list].sort(() => rand() - 0.5)
+}
+
+type QuoteItem = { text: string; dog: 'maltese' | 'retriever' }
 
 export default function QuotesPage() {
-  const [filter, setFilter] = useState<Filter>('all')
-  const [tick, setTick] = useState(0)
-  const favList = storage.getFavQuotes()
-
-  const shownList = useMemo(() => {
-    type Item = { text: string; dog: 'maltese' | 'retriever' }
-    let items: Item[]
-    if (filter === 'maltese') {
-      items = QUOTES_MALTESE.map((q): Item => ({ text: q, dog: 'maltese' }))
-    } else if (filter === 'retriever') {
-      items = QUOTES_RETRIEVER.map((q): Item => ({ text: q, dog: 'retriever' }))
-    } else {
-      const mal: Item[] = QUOTES_MALTESE.map((q) => ({ text: q, dog: 'maltese' as const }))
-      const ret: Item[] = QUOTES_RETRIEVER.map((q) => ({ text: q, dog: 'retriever' as const }))
-      const merged: Item[] = []
-      for (let i = 0; i < Math.max(mal.length, ret.length); i++) {
-        if (mal[i]) merged.push(mal[i])
-        if (ret[i]) merged.push(ret[i])
-      }
-      items = merged
+  const today = todayStr()
+  const allItems = useMemo<QuoteItem[]>(() => {
+    const m: QuoteItem[] = shuffle(QUOTES_MALTESE, today).map((q) => ({
+      text: q,
+      dog: 'maltese',
+    }))
+    const r: QuoteItem[] = shuffle(QUOTES_RETRIEVER, today + 'r').map((q) => ({
+      text: q,
+      dog: 'retriever',
+    }))
+    const merged: QuoteItem[] = []
+    const n = Math.max(m.length, r.length)
+    for (let i = 0; i < n; i++) {
+      if (i < m.length) merged.push(m[i])
+      if (i < r.length) merged.push(r[i])
     }
-    if (filter === 'fav') {
-      items = items.filter((it) => favList.includes(it.text))
-    }
-    return items
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, tick])
+    return merged
+  }, [today])
 
-  function toggle(quote: string) {
-    storage.toggleFavQuote(quote)
-    setTick((v) => v + 1)
+  const [tab, setTab] = useState<'all' | 'fav'>('all')
+  const favKeys = storage.getFavQuotes()
+  const favItems = allItems.filter((q) => favKeys.includes(`${q.dog}:${q.text}`))
+
+  const show = tab === 'all' ? allItems : favItems
+
+  function toggleFav(item: QuoteItem) {
+    const key = `${item.dog}:${item.text}`
+    if (favKeys.includes(key)) storage.removeFavQuote(key)
+    else storage.addFavQuote(key)
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 pt-6 pb-28">
+    <div className="mx-auto max-w-xl px-4 pt-8 pb-32">
       <header className="text-center">
-        <h1 className="text-3xl font-cute font-bold text-lineBrown">治愈语录</h1>
-        <p className="mt-1 text-sm text-softBrown">挑一句戳到你的，点爱心收藏起来～</p>
+        <h1 className="text-2xl font-cute font-bold text-deepBrown">
+          小狗的悄悄话
+        </h1>
+        <p className="mt-1 text-sm text-grayBrown">偶尔来看看，它们有话要说～</p>
       </header>
 
-      {/* Tab 切换 */}
-      <section className="mt-5">
-        <div className="grid grid-cols-4 gap-2">
-          {([
-            { key: 'all', label: '全部' },
-            { key: 'maltese', label: '马尔济斯' },
-            { key: 'retriever', label: '小金毛' },
-            { key: 'fav', label: '收藏' },
-          ] as { key: Filter; label: string }[]).map((item) => (
-            <button
-              key={item.key}
-              onClick={() => setFilter(item.key)}
-              className={`py-2 px-3 rounded-full text-xs font-bold transition ${
-                filter === item.key
-                  ? 'bg-retrieverGold text-lineBrown shadow-soft'
-                  : 'bg-white text-softBrown border border-milk'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+      {/* 双小狗 */}
+      <section className="mt-6 flex items-center justify-center gap-3">
+        <DogMaltese mood="hug" size={90} />
+        <span className="text-softPink font-cute text-2xl font-bold">♡</span>
+        <DogRetriever mood="happy" size={90} wag />
+      </section>
+
+      {/* Tab */}
+      <section className="mt-8">
+        <div className="flex items-center gap-2 bg-white rounded-full p-1 border border-deepBrown/10">
+          <button
+            type="button"
+            className={`flex-1 py-2 rounded-full font-bold transition ${
+              tab === 'all' ? 'bg-deepBrown text-white' : 'text-grayBrown'
+            }`}
+            onClick={() => setTab('all')}
+          >
+            全部
+          </button>
+          <button
+            type="button"
+            className={`flex-1 py-2 rounded-full font-bold transition ${
+              tab === 'fav' ? 'bg-deepBrown text-white' : 'text-grayBrown'
+            }`}
+            onClick={() => setTab('fav')}
+          >
+            我的收藏 ({favKeys.length})
+          </button>
         </div>
       </section>
 
-      {/* 语录列表 */}
-      <section className="mt-5 space-y-3">
-        {shownList.length === 0 && (
-          <div className="card-base p-8 text-center">
-            <div className="mx-auto mb-3">
-              {filter === 'fav' ? (
-                <DogMaltese mood="daze" size={100} />
-              ) : (
-                <DogRetriever mood="sleep" size={100} />
-              )}
-            </div>
-            <p className="text-sm text-softBrown font-cute">
-              {filter === 'fav' ? '还没有收藏过任何语录哦。' : '这里空空的，小狗去休息了。'}
-            </p>
-          </div>
-        )}
-        {shownList.map((q) => {
-          const fav = storage.isFavQuote(q.text)
+      {/* 列表 */}
+      <section className="mt-6 space-y-3">
+        {show.map((item, idx) => {
+          const key = `${item.dog}:${item.text}`
+          const fav = favKeys.includes(key)
+          const Dog = item.dog === 'maltese' ? DogMaltese : DogRetriever
           return (
-            <article key={q.text} className="card-base p-5">
+            <div key={idx} className="quote-card">
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0">
-                  {q.dog === 'maltese' ? (
-                    <DogMaltese mood="happy" size={56} />
-                  ) : (
-                    <DogRetriever mood="cheer" size={56} />
-                  )}
+                <div className="w-12 h-12 flex-shrink-0">
+                  <Dog mood="happy" size={48} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold text-softBrown">
-                    {q.dog === 'maltese' ? '马尔济斯说' : '小金毛说'}
-                  </div>
-                  <p className="mt-1 text-base leading-relaxed text-lineBrown font-cute">
-                    “{q.text}”
+                <div className="flex-1 min-w-0 pt-1">
+                  <p className="text-base leading-relaxed text-deepBrown font-cute">
+                    “{item.text}”
                   </p>
                 </div>
-              </div>
-              <div className="mt-3 flex justify-end">
                 <button
-                  onClick={() => toggle(q.text)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
-                    fav
-                      ? 'bg-[#FFD9E0] text-[#c4823f]'
-                      : 'bg-white text-softBrown border border-milk hover:brightness-105'
-                  }`}
+                  type="button"
+                  onClick={() => toggleFav(item)}
+                  className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-white border border-deepBrown/10 text-softPink transition active:scale-90"
+                  aria-label="收藏"
                 >
-                  {fav ? '已收藏 ♥' : '收藏 ♡'}
+                  {fav ? '♥' : '♡'}
                 </button>
               </div>
-            </article>
+            </div>
           )
         })}
+        {show.length === 0 && (
+          <div className="text-center py-12 text-grayBrown text-sm">
+            {tab === 'fav' ? '还没有收藏呢～' : '加载中...'}
+          </div>
+        )}
       </section>
     </div>
   )
