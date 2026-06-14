@@ -1,7 +1,7 @@
 export type MoodKey = 'happy' | 'normal' | 'sad' | 'anxious' | 'tired'
 
 export interface MoodRecord {
-  date: string // YYYY-MM-DD
+  date: string
   mood: MoodKey
   text: string
   createdAt: number
@@ -45,11 +45,10 @@ export const storage = {
   },
   addMood(record: MoodRecord) {
     const list = storage.getMoods()
-    // 同一天只保留一条（覆盖）
     const filtered = list.filter((r) => r.date !== record.date)
     filtered.push(record)
     filtered.sort((a, b) => b.createdAt - a.createdAt)
-    safeSet(KEYS.MOODS, filtered.slice(0, 60))
+    safeSet(KEYS.MOODS, filtered.slice(0, 90))
   },
   clearMoods() {
     safeSet(KEYS.MOODS, [])

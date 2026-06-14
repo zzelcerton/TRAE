@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import DogIllustration from '../components/DogIllustration'
-import { QUOTES } from '../data/quotes'
-import { storage, todayStr, MOOD_LABELS, MOOD_EMOJI, MOOD_MESSAGES } from '../utils/storage'
+import DogMaltese from '../components/DogMaltese'
+import DogRetriever from '../components/DogRetriever'
+import { QUOTES_MALTESE, QUOTES_RETRIEVER } from '../data/quotes'
+import { storage, todayStr, MOOD_LABELS, MOOD_EMOJI } from '../utils/storage'
 
 function pickByDate<T>(list: T[], date: string): T {
   const seed = date.split('-').reduce((acc, v) => acc + Number(v), 0)
@@ -11,69 +12,90 @@ function pickByDate<T>(list: T[], date: string): T {
 
 export default function HomePage() {
   const today = todayStr()
-  const greeting = useMemo(() => '今天也要被小狗治愈一下～', [])
-  const todayQuote = useMemo(() => pickByDate(QUOTES, today), [today])
+  const todayMalteseQuote = useMemo(
+    () => pickByDate(QUOTES_MALTESE, today),
+    [today],
+  )
+  const todayRetrieverQuote = useMemo(
+    () => pickByDate(QUOTES_RETRIEVER, today),
+    [today],
+  )
 
   const moods = storage.getMoods()
   const todayMood = moods.find((m) => m.date === today)
-
   const collected = storage.getCollected().length
 
   return (
     <div className="mx-auto max-w-xl px-4 pt-6 pb-28">
       {/* 问候 */}
-      <header className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-softBrown">
-            {new Date().toLocaleDateString('zh-CN', {
-              month: 'long',
-              day: 'numeric',
-              weekday: 'long',
-            })}
-          </p>
-          <h1 className="mt-1 text-2xl font-extrabold text-lineBrown">{greeting}</h1>
-        </div>
+      <header className="text-center">
+        <p className="text-sm text-softBrown">
+          {new Date().toLocaleDateString('zh-CN', {
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+          })}
+        </p>
+        <h1 className="mt-1 text-3xl font-cute font-bold text-lineBrown">
+          今天也要被小狗治愈一下～
+        </h1>
       </header>
 
-      {/* 小狗插画 */}
-      <section className="card-base mt-5 p-6 flex flex-col items-center animate-pop">
-        <div className="animate-float">
-          <DogIllustration mood="happy" size={200} wag />
+      {/* 双小狗插画 Hero */}
+      <section className="card-base mt-5 p-4 animate-fadeUp">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 flex flex-col items-center">
+            <div className="animate-float">
+              <DogMaltese mood="happy" size={140} wag />
+            </div>
+          </div>
+          <div className="flex flex-col items-center text-2xl font-cute text-lineBrown">💕</div>
+          <div className="flex-1 flex flex-col items-center">
+            <div
+              className="animate-float"
+              style={{ animationDelay: '0.4s' }}
+            >
+              <DogRetriever mood="cheer" size={140} wag />
+            </div>
+          </div>
         </div>
-        <p className="mt-2 text-lineBrown/80 text-sm">摇尾巴的小狗在等你呀 🐾</p>
+        <p className="mt-1 text-center text-sm text-lineBrown/80 font-cute">
+          马尔济斯 &amp; 小金毛在等你呀 🐾
+        </p>
       </section>
 
       {/* 今日心情入口 */}
-      <section className="mt-5">
-        <div className="flex items-center justify-between px-1">
-          <h2 className="text-lg font-extrabold text-lineBrown">今日心情</h2>
-          <Link to="/mood" className="text-sm text-softBrown underline underline-offset-4">
-            查看记录 →
-          </Link>
-        </div>
+      <section className="mt-6">
+        <h2 className="font-cute text-lg font-bold text-lineBrown px-1">
+          今日心情
+        </h2>
         <div className="card-base mt-3 p-5">
           {todayMood ? (
             <div className="flex items-center gap-3">
               <div className="text-3xl">{MOOD_EMOJI[todayMood.mood]}</div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="font-bold text-lineBrown">
                   今天是「{MOOD_LABELS[todayMood.mood]}」的一天
                 </div>
-                <div className="mt-1 text-sm text-softBrown">{todayMood.text}</div>
+                {todayMood.text && (
+                  <div className="mt-1 text-sm text-softBrown truncate">
+                    {todayMood.text}
+                  </div>
+                )}
               </div>
-              <Link to="/mood" className="btn-ghost">
+              <Link to="/mood" className="btn-primary px-4 py-2">
                 更新
               </Link>
             </div>
           ) : (
             <div className="flex items-center justify-between gap-3">
-              <div>
+              <div className="min-w-0 flex-1">
                 <div className="font-bold text-lineBrown">还没有记录今天的心情</div>
                 <div className="mt-1 text-sm text-softBrown">
                   花 10 秒钟，告诉小狗你今天过得怎么样吧。
                 </div>
               </div>
-              <Link to="/mood" className="btn-primary">
+              <Link to="/mood" className="btn-primary whitespace-nowrap">
                 记一笔
               </Link>
             </div>
@@ -81,40 +103,67 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 今日语录 */}
-      <section className="mt-5">
-        <h2 className="text-lg font-extrabold text-lineBrown px-1">今日语录</h2>
-        <Link to="/quotes" className="block mt-3 card-base p-5 hover:brightness-105 transition">
-          <p className="text-lg leading-relaxed text-lineBrown font-bold">“{todayQuote}”</p>
-          <div className="mt-3 flex items-center justify-between text-sm text-softBrown">
-            <span>— 小狗说</span>
-            <span>换一条 →</span>
-          </div>
-        </Link>
+      {/* 今日双语录 */}
+      <section className="mt-6">
+        <h2 className="font-cute text-lg font-bold text-lineBrown px-1">今天的一句话</h2>
+        <div className="mt-3 space-y-3">
+          <Link
+            to="/quotes"
+            className="card-base p-5 block hover:-translate-y-0.5 transition"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-milk flex items-center justify-center text-lg">
+                🐶
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold text-lineBrown">马尔济斯说</div>
+                <p className="mt-1 text-sm text-lineBrown/85 font-cute">
+                  “{todayMalteseQuote}”
+                </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            to="/quotes"
+            className="card-base p-5 block hover:-translate-y-0.5 transition"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#FFE4A8] flex items-center justify-center text-lg">
+                🐕
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold text-lineBrown">小金毛说</div>
+                <p className="mt-1 text-sm text-lineBrown/85 font-cute">
+                  "{todayRetrieverQuote}"
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
       </section>
 
       {/* 快捷入口 */}
-      <section className="mt-5 grid grid-cols-2 gap-3">
+      <section className="mt-6 grid grid-cols-2 gap-3">
         <Link
           to="/cards"
-          className="card-base p-4 flex items-center gap-3 hover:translate-y-[-2px] transition"
+          className="card-base p-4 flex items-center gap-3 hover:-translate-y-0.5 transition"
         >
-          <div className="rounded-2xl bg-softYellow/60 w-12 h-12 flex items-center justify-center text-xl">
+          <div className="w-12 h-12 rounded-2xl bg-[#FFE4A8] flex items-center justify-center text-xl">
             🎴
           </div>
-          <div>
-            <div className="font-extrabold text-lineBrown">卡片收集</div>
+          <div className="min-w-0">
+            <div className="font-extrabold text-lineBrown">小狗卡片</div>
             <div className="text-xs text-softBrown">已收集 {collected} / 5</div>
           </div>
         </Link>
         <Link
           to="/quotes"
-          className="card-base p-4 flex items-center gap-3 hover:translate-y-[-2px] transition"
+          className="card-base p-4 flex items-center gap-3 hover:-translate-y-0.5 transition"
         >
-          <div className="rounded-2xl bg-softPink/70 w-12 h-12 flex items-center justify-center text-xl">
+          <div className="w-12 h-12 rounded-2xl bg-[#FFD9E0] flex items-center justify-center text-xl">
             💬
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="font-extrabold text-lineBrown">治愈语录</div>
             <div className="text-xs text-softBrown">
               已收藏 {storage.getFavQuotes().length} 条
@@ -124,12 +173,8 @@ export default function HomePage() {
       </section>
 
       {/* 小提示 */}
-      <section className="mt-6 px-2 text-xs text-softBrown/80 leading-relaxed text-center">
-        {(() => {
-          const hint =
-            MOOD_MESSAGES[todayMood?.mood ?? 'normal']?.[0] ?? '今天也要对自己温柔一点哦。'
-          return <p>· {hint} ·</p>
-        })()}
+      <section className="mt-8 px-2 text-xs text-softBrown/80 text-center font-cute">
+        <p>· 每天和两只小狗一起，慢慢生活吧～ ·</p>
       </section>
     </div>
   )
