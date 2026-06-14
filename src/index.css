@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Nunito', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  color: #3e2e22;
+  -webkit-font-smoothing: antialiased;
+  background: radial-gradient(circle at 20% 0%, #fff3d6 0%, #fffbf2 45%, #ffe8ec 100%);
+  background-attachment: fixed;
+}
+
+@layer components {
+  .card-base {
+    @apply rounded-2xl bg-white/80 backdrop-blur shadow-soft border border-white;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-softYellow text-lineBrown font-bold shadow-pop transition active:scale-95 active:translate-y-0.5 hover:brightness-105 select-none;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white text-lineBrown font-bold shadow-soft border border-white/70 transition active:scale-95 hover:bg-milk select-none;
+  }
+  .tab-item {
+    @apply flex flex-col items-center justify-center gap-0.5 flex-1 text-xs text-softBrown transition select-none;
+  }
+  .tab-active {
+    @apply text-lineBrown;
+  }
+  .mood-chip {
+    @apply flex flex-col items-center justify-center gap-2 py-4 px-3 rounded-2xl bg-white border border-transparent shadow-soft transition active:scale-95 cursor-pointer select-none;
+  }
+  .mood-chip-active {
+    @apply border-softPink bg-softPink/40;
+  }
+}
+
+/* 自定义滚动条（桌面端更清爽） */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #f2dcc0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
